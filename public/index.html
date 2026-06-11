@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NEXUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ══════════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-bg">
+    <div class="auth-orb orb1"></div>
+    <div class="auth-orb orb2"></div>
+    <div class="auth-orb orb3"></div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-icon">N</div>
+      <span class="logo-text">NEXUS</span>
+    </div>
+    <p class="auth-tagline">connect. talk. disappear.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="authTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="authTab('register')">Create Account</button>
+    </div>
+
+    <div id="form-login" class="auth-form">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="l-user" placeholder="your username" autocomplete="off" spellcheck="false"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="l-pass" placeholder="your password"/>
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Sign In</button>
+      <div class="auth-msg" id="login-msg"></div>
+    </div>
+
+    <div id="form-register" class="auth-form hidden">
+      <div class="field">
+        <label>Display Name</label>
+        <input type="text" id="r-name" placeholder="how others will see you" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="r-user" placeholder="for logging in" autocomplete="off" spellcheck="false"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="r-pass" placeholder="min. 4 characters"/>
+      </div>
+      <button class="btn-primary" onclick="doRegister()">Create Account</button>
+      <div class="auth-msg" id="register-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══════════════════════════════════════════════ -->
+<div id="app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-top">
+      <div class="app-brand">
+        <span class="brand-n">N</span><span class="brand-exus">EXUS</span>
+      </div>
+      <div class="me-card" onclick="openSettings()">
+        <div class="me-avatar avatar sm" id="me-avatar"></div>
+        <div class="me-info">
+          <div class="me-name" id="me-name">—</div>
+          <div class="me-phone" id="me-phone">—</div>
+        </div>
+        <div class="me-settings-icon">⚙</div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input type="text" id="contact-search" placeholder="🔍  Search contacts…" oninput="filterContacts(this.value)"/>
+    </div>
+
+    <div class="contacts-label">Conversations</div>
+    <div id="contacts-list" class="contacts-list">
+      <div class="empty-contacts">No contacts yet.<br/>Add someone below ↓</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-btn" onclick="openAddPanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7"/><line x1="19" y1="15" x2="19" y2="21"/><line x1="16" y1="18" x2="22" y2="18"/></svg>
+        Add
+      </button>
+      <button class="sidebar-btn" onclick="openSettings()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Settings
+      </button>
+      <button class="sidebar-btn dev-only hidden" id="dev-mode-btn" onclick="openDevPanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Dev
+      </button>
+    </div>
+  </aside>
+
+  <!-- CHAT AREA -->
+  <main id="chat-area">
+    <div id="chat-empty" class="chat-empty">
+      <div class="empty-icon">💬</div>
+      <h2>Your messages</h2>
+      <p>Select a contact or add someone new<br/>to start talking.</p>
+    </div>
+    <div id="chat-view" class="hidden">
+      <div class="chat-header">
+        <div class="avatar" id="ch-avatar"></div>
+        <div class="ch-info">
+          <div class="ch-name" id="ch-name">—</div>
+          <div class="ch-sub" id="ch-phone">—</div>
+        </div>
+      </div>
+      <div class="messages-container" id="messages-container"></div>
+      <div class="input-bar">
+        <input type="text" id="msg-input" placeholder="Message…" onkeydown="msgKeydown(event)" autocomplete="off"/>
+        <button class="send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ADD CONTACT PANEL -->
+  <div id="add-panel" class="side-panel hidden">
+    <div class="panel-header">
+      <h3>Add Contact</h3>
+      <button class="close-btn" onclick="closeAddPanel()">✕</button>
+    </div>
+    <p class="panel-desc">Enter their NEXUS number to add them.</p>
+    <div class="phone-input-wrap">
+      <span class="phone-prefix">+67</span>
+      <input type="text" id="add-phone-input" placeholder="60 xxxx xxx" oninput="formatPhoneInput(this)" maxlength="12"/>
+    </div>
+    <button class="btn-primary" onclick="doAddContact()">Add Contact</button>
+    <div class="panel-msg" id="add-msg"></div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div id="settings-panel" class="side-panel hidden">
+    <div class="panel-header">
+      <h3>Settings</h3>
+      <button class="close-btn" onclick="closeSettings()">✕</button>
+    </div>
+
+    <!-- Avatar -->
+    <div class="settings-avatar-area">
+      <div class="settings-avatar avatar lg" id="settings-avatar" onclick="document.getElementById('avatar-file').click()">
+        <div class="avatar-edit-icon">📷</div>
+      </div>
+      <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="uploadAvatar(this)"/>
+      <p class="avatar-hint">Tap to change photo</p>
+    </div>
+
+    <!-- Display Name -->
+    <div class="settings-section">
+      <label class="settings-label">Display Name</label>
+      <div class="settings-row">
+        <input type="text" id="settings-name" class="settings-input" placeholder="Your name"/>
+        <button class="btn-small" onclick="saveName()">Save</button>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="settings-section">
+      <label class="settings-label">Status</label>
+      <div class="settings-row">
+        <input type="text" id="settings-status" class="settings-input" placeholder="What's on your mind?" maxlength="80"/>
+        <button class="btn-small" onclick="saveStatus()">Save</button>
+      </div>
+    </div>
+
+    <!-- Theme -->
+    <div class="settings-section">
+      <label class="settings-label">Theme Color</label>
+      <div class="theme-swatches" id="theme-swatches"></div>
+    </div>
+
+    <!-- NEXUS Number -->
+    <div class="settings-section">
+      <label class="settings-label">Your NEXUS Number</label>
+      <div class="phone-display-row">
+        <div class="phone-display" id="settings-phone">—</div>
+        <button class="btn-small" onclick="copyPhone()">Copy</button>
+      </div>
+    </div>
+
+    <!-- Account Info -->
+    <div class="settings-section">
+      <label class="settings-label">Account</label>
+      <div class="account-info-box">
+        <div class="account-info-row">
+          <span class="ai-label">Username</span>
+          <span class="ai-value" id="ai-username">—</span>
+        </div>
+        <div class="account-info-row">
+          <span class="ai-label">Member since</span>
+          <span class="ai-value" id="ai-since">—</span>
+        </div>
+        <div class="account-info-row">
+          <span class="ai-label">Messages sent</span>
+          <span class="ai-value" id="ai-msgcount">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="settings-section">
+      <label class="settings-label">Change Password</label>
+      <div class="field" style="margin-bottom:8px">
+        <input type="password" id="pw-old" class="settings-input" placeholder="Current password"/>
+      </div>
+      <div class="field" style="margin-bottom:8px">
+        <input type="password" id="pw-new" class="settings-input" placeholder="New password (min. 4)"/>
+      </div>
+      <button class="btn-small" style="width:100%" onclick="changePassword()">Update Password</button>
+    </div>
+
+    <div class="settings-msg" id="settings-msg"></div>
+
+    <!-- Bottom buttons -->
+    <div class="settings-bottom">
+      <button class="btn-credits" onclick="openCredits()">★ Credits</button>
+      <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+
+    <div class="danger-zone">
+      <div class="danger-label">Danger Zone</div>
+      <button class="btn-danger" onclick="openDeleteConfirm()">🗑 Delete Account</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY -->
+  <div id="overlay" class="overlay hidden" onclick="closeAll()"></div>
+
+  <!-- DEV MODE PANEL (admin only) -->
+  <div id="dev-panel" class="dev-panel hidden">
+    <div class="dev-topbar">
+      <div class="dev-brand">
+        <span class="dev-badge">⚡ DEV MODE</span>
+        <span class="dev-subtitle">admin access</span>
+      </div>
+      <div class="dev-tabs">
+        <button class="dev-tab active" onclick="devTab('users', this)">👥 Users</button>
+        <button class="dev-tab" onclick="devTab('css', this)">🎨 CSS Inject</button>
+        <button class="dev-tab" onclick="devTab('edit', this)">✏️ Live Edit</button>
+        <button class="dev-tab" onclick="devTab('stats', this)">📊 Stats</button>
+      </div>
+      <button class="dev-close" onclick="closeDevPanel()">✕ Close</button>
+    </div>
+
+    <div class="dev-body">
+      <!-- USERS TAB -->
+      <div id="dev-tab-users" class="dev-content">
+        <div class="dev-section-title">Registered users — including credentials</div>
+        <div id="dev-users-table"></div>
+      </div>
+
+      <!-- CSS TAB -->
+      <div id="dev-tab-css" class="dev-content hidden">
+        <div class="dev-section-title">CSS Injector — changes are lost on refresh</div>
+        <textarea id="css-injector" class="css-textarea" placeholder="/* type any CSS here, it applies live */
+.app-brand { color: red; }
+:root { --accent: #ff0000; }" oninput="injectCSS(this.value)"></textarea>
+        <div class="dev-row">
+          <button class="dev-btn" onclick="injectCSS(document.getElementById('css-injector').value)">▶ Apply</button>
+          <button class="dev-btn secondary" onclick="clearCSS()">✕ Clear</button>
+          <span class="dev-note">Lost on refresh — no permanent changes</span>
+        </div>
+        <div class="css-presets">
+          <div class="preset-label">Quick presets:</div>
+          <button class="preset-btn" onclick="applyPreset('red')">🔴 Red</button>
+          <button class="preset-btn" onclick="applyPreset('blue')">🔵 Blue</button>
+          <button class="preset-btn" onclick="applyPreset('green')">🟢 Green</button>
+          <button class="preset-btn" onclick="applyPreset('gold')">🟡 Gold</button>
+          <button class="preset-btn" onclick="applyPreset('pink')">🩷 Pink</button>
+        </div>
+      </div>
+
+      <!-- LIVE EDIT TAB -->
+      <div id="dev-tab-edit" class="dev-content hidden">
+        <div class="dev-section-title">Live Text Editor — changes lost on refresh</div>
+        <div class="edit-info">
+          When enabled, click any text on the page to edit it directly.<br/>
+          Nothing saves to the database — pure visual editing.
+        </div>
+        <div class="dev-row" style="margin-top:20px">
+          <button class="dev-btn" id="live-edit-btn" onclick="toggleLiveEdit()">✏️ Enable Live Edit</button>
+          <span class="dev-note" id="live-edit-status">Off</span>
+        </div>
+        <div class="edit-tips">
+          <div class="tip">💡 Click any sidebar text, button, or header to edit</div>
+          <div class="tip">💡 Press Escape to stop editing a field</div>
+          <div class="tip">💡 Reload page to reset all changes</div>
+        </div>
+      </div>
+
+      <!-- STATS TAB -->
+      <div id="dev-tab-stats" class="dev-content hidden">
+        <div class="dev-section-title">Server Statistics</div>
+        <div id="dev-stats-grid" class="stats-grid"></div>
+        <button class="dev-btn" style="margin-top:20px" onclick="loadDevStats()">↺ Refresh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREDITS MODAL -->
+  <div id="credits-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="credits-logo">N</div>
+      <h2 class="credits-title">NEXUS</h2>
+      <p class="credits-version">v1.0</p>
+      <div class="credits-divider"></div>
+      <div class="credits-line">
+        <span class="credits-role">Chief Maker</span>
+        <span class="credits-name">Stickman</span>
+      </div>
+      <div class="credits-line">
+        <span class="credits-role">AI Assistant</span>
+        <span class="credits-name">Claude AI</span>
+      </div>
+      <div class="credits-divider"></div>
+      <button class="btn-primary" onclick="closeCredits()">Close</button>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div id="delete-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="delete-icon">🗑</div>
+      <h2 class="modal-title">Delete Account</h2>
+      <p class="modal-desc">This is permanent. All your messages and contacts will be deleted.<br/><br/>Type your username to confirm:</p>
+      <input type="text" id="delete-confirm-input" class="settings-input" placeholder="your username" style="margin:16px 0" autocomplete="off" spellcheck="false"/>
+      <div style="display:flex;gap:10px">
+        <button class="btn-danger" style="flex:1" onclick="confirmDeleteAccount()">Delete Forever</button>
+        <button class="btn-cancel" style="flex:1" onclick="closeDeleteConfirm()">Cancel</button>
+      </div>
+      <div class="panel-msg" id="delete-msg" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
