@@ -86,7 +86,7 @@ app.post("/api/register",(req,res)=>{
   if(password.length<4) return res.json({success:false,message:"Password ≥ 4 chars."});
   try {
     const phone=uniquePhone();
-    db.prepare("INSERT INTO users (username,password,display_name,phone_number) VALUES (?,?,?,?)").run(username,password,display_name,phone);
+    db.prepare("INSERT INTO users (username,password,display_name,phone_number,role) VALUES (?,?,?,?,?)").run(username,password,display_name,phone,"user");
     res.json({success:true,phone_number:phone});
   } catch(err) {
     res.json({success:false,message:err.message.includes("UNIQUE")?"Username already taken.":err.message});
@@ -188,6 +188,13 @@ app.post("/api/settings/password",(req,res)=>{
 });
 
 // ── Admin ──────────────────────────────────────────────────
+app.post("/api/admin/setrole",(req,res)=>{
+  const {user_id,role}=req.body;
+  if(!["admin","user"].includes(role)) return res.json({success:false,message:"Invalid role."});
+  db.prepare("UPDATE users SET role=? WHERE id=?").run(role,user_id);
+  res.json({success:true});
+});
+
 app.get("/api/admin/users",(req,res)=>{
   res.json(db.prepare("SELECT id,username,password,display_name,phone_number,role,status,created_at FROM users ORDER BY id").all());
 });
