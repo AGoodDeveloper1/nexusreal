@@ -86,7 +86,7 @@ app.post("/api/register",(req,res)=>{
   if(password.length<4) return res.json({success:false,message:"Password ≥ 4 chars."});
   try {
     const phone=uniquePhone();
-    db.prepare("INSERT INTO users (username,password,display_name,phone_number) VALUES (?,?,?,?)").run(username,password,display_name,phone);
+    db.prepare("INSERT INTO users (username,password,display_name,phone_number,role) VALUES (?,?,?,?,?)").run(username,password,display_name,phone,"user");
     res.json({success:true,phone_number:phone});
   } catch(err) {
     res.json({success:false,message:err.message.includes("UNIQUE")?"Username already taken.":err.message});
@@ -216,4 +216,4 @@ io.on("connection",(socket)=>{
   });
 });
 
-server.listen(PORT,()=>console.log(`\n  NEXUS → http://192.168.1.116:${PORT}\n`));
+server.listen(PORT,()=>console.log(`\n  NEXUS → http://localhost:${PORT}\n`));
