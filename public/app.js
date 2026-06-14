@@ -64,6 +64,7 @@ async function doRegister() {
   try {
     const data = await post("/api/register", { display_name, username, password });
     if (data.success) {
+      window._nexusTutorialPending = true;
       showMsg(msgEl,"ok",`✓ Done! Your number:\n${data.phone_number}\n\nNow sign in.`);
       setTimeout(() => authTab("login"), 2800);
     } else {
@@ -77,7 +78,9 @@ function logout() {
   currentUser = null; currentChat = null; contacts = [];
   if (socket) socket.disconnect();
   document.getElementById("app").classList.add("hidden");
-  document.getElementById("auth-screen").style.display = "flex";
+  document.getElementById("auth-screen").style.display = "none";
+  document.getElementById("auth-screen").classList.add("hidden");
+  document.getElementById("landing").classList.remove("hidden");
   document.getElementById("l-user").value = "";
   document.getElementById("l-pass").value = "";
   closeAll();
@@ -96,6 +99,10 @@ async function launchApp() {
   }
   await loadContacts();
   connectSocket();
+  if (window._nexusTutorialPending) {
+    window._nexusTutorialPending = false;
+    setTimeout(startTutorial, 600);
+  }
 }
 
 function refreshMeHeader() {
@@ -700,3 +707,133 @@ document.addEventListener("keydown", e => {
     else doRegister();
   }
 });
+
+// ═══════════════════════════════════════════════════════════
+//  LANDING PAGE
+// ═══════════════════════════════════════════════════════════
+function showAuth(tab) {
+  document.getElementById("landing").classList.add("hidden");
+  const authEl = document.getElementById("auth-screen");
+  authEl.classList.remove("hidden");
+  authEl.style.display = "flex";
+  authTab(tab);
+}
+
+// Override bootstrap: if not logged in, show landing instead of auth
+const _origBootstrap = window.addEventListener;
+window.addEventListener("DOMContentLoaded", () => {
+  if (!localStorage.getItem("nexus_user")) {
+    // landing is visible by default, auth is hidden — nothing to do
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  TUTORIAL
+// ═══════════════════════════════════════════════════════════
+const TUT_STEPS = [
+  {
+    title: "Welcome to NEXUS! 👋",
+    desc: "You just created your account. Let's take a 30-second tour so you know where everything is.",
+    target: null,
+    pos: "center"
+  },
+  {
+    title: "Your Profile",
+    desc: "This is you! Click here anytime to open Settings — change your name, photo, status, theme color, or password.",
+    target: ".me-card",
+    pos: "right"
+  },
+  {
+    title: "Add Contacts",
+    desc: "Hit 'Add' to add someone by their NEXUS number (like +67 60 1234 567). Share yours so people can find you!",
+    target: ".sidebar-footer",
+    pos: "right"
+  },
+  {
+    title: "Your NEXUS Number",
+    desc: "Your unique number is shown under your name. Go to Settings → copy it and share it with friends.",
+    target: ".me-phone",
+    pos: "right"
+  },
+  {
+    title: "Search Contacts",
+    desc: "Once you have contacts, search them by name or number right here.",
+    target: ".search-wrap",
+    pos: "right"
+  },
+  {
+    title: "You're all set! 🚀",
+    desc: "That's everything. Add your first contact and start chatting. Have fun!",
+    target: null,
+    pos: "center"
+  }
+];
+
+let tutStep = 0;
+
+function startTutorial() {
+  tutStep = 0;
+  document.getElementById("tutorial").classList.remove("hidden");
+  renderTutStep();
+}
+
+function skipTutorial() {
+  document.getElementById("tutorial").classList.add("hidden");
+  document.getElementById("tut-highlight").style.display = "none";
+}
+
+function tutNext() {
+  tutStep++;
+  if (tutStep >= TUT_STEPS.length) { skipTutorial(); return; }
+  renderTutStep();
+}
+
+function renderTutStep() {
+  const step = TUT_STEPS[tutStep];
+  const total = TUT_STEPS.length;
+  const box = document.getElementById("tut-box");
+  const hl  = document.getElementById("tut-highlight");
+
+  setText("tut-step-label", `Step ${tutStep+1} of ${total}`);
+  setText("tut-title", step.title);
+  setText("tut-desc", step.desc);
+
+  // Dots
+  const dots = document.getElementById("tut-dots");
+  dots.innerHTML = TUT_STEPS.map((_,i) =>
+    `<div class="tut-dot${i===tutStep?" active":""}"></div>`).join("");
+
+  // Last step: change button
+  document.querySelector(".tut-next").textContent = tutStep === total-1 ? "Done ✓" : "Next →";
+  // First/last: hide skip
+  document.querySelector(".tut-skip").style.display = (tutStep===0||tutStep===total-1) ? "none":"inline-block";
+
+  // Highlight target
+  if (step.target && step.pos !== "center") {
+    const el = document.querySelector(step.target);
+    if (el) {
+      const r = el.getBoundingClientRect();
+      hl.style.cssText = `display:block;left:${r.left-4}px;top:${r.top-4}px;width:${r.width+8}px;height:${r.height+8}px`;
+      // Position box
+      const bw = 300, bh = 200, pad = 16;
+      let left = r.right + pad;
+      let top  = r.top;
+      if (left + bw > window.innerWidth) left = r.left - bw - pad;
+      if (top + bh > window.innerHeight) top = window.innerHeight - bh - pad;
+      box.style.left = Math.max(pad, left) + "px";
+      box.style.top  = Math.max(pad, top)  + "px";
+      box.style.transform = "none";
+    }
+  } else {
+    hl.style.display = "none";
+    box.style.left   = "50%";
+    box.style.top    = "50%";
+    box.style.transform = "translate(-50%,-50%)";
+  }
+}
+
+// Trigger tutorial after first-time register + login
+const _origLaunchApp = launchApp;
+// Patch doRegister success to set flag
+const _origDoRegister = doRegister;
+window._nexusTutorialPending = false;
