@@ -11,77 +11,8 @@
 </head>
 <body>
 
-<!-- -- LANDING PAGE ----------------------------------------- -->
-<div id="landing">
-  <nav class="land-nav">
-    <div class="land-logo">
-      <div class="land-logo-icon">N</div>
-      NEXUS
-    </div>
-    <div class="land-nav-btns">
-      <button class="btn-outline" onclick="showAuth('login')">Sign In</button>
-      <button class="btn-nav-primary" onclick="showAuth('register')">Get Started</button>
-    </div>
-  </nav>
-  <section class="land-hero">
-    <div class="hero-glow"></div>
-    <div class="hero-badge"><span class="hero-badge-dot"></span> Real-time messaging</div>
-    <h1 class="hero-title">The chat app that<br/><span>just works.</span></h1>
-    <p class="hero-sub">Fast, clean, and yours. NEXUS gives you real-time messaging with a personal number — no phone required.</p>
-    <div class="hero-btns">
-      <button class="btn-hero-primary" onclick="showAuth('register')">Create Free Account</button>
-      <button class="btn-hero-outline" onclick="showAuth('login')">Sign In</button>
-    </div>
-    <div class="hero-preview">
-      <div class="preview-bar">
-        <div class="preview-dot"></div>
-        <div class="preview-name">Alex</div>
-      </div>
-      <div class="preview-msgs">
-        <div class="pm r">Hey! Did you get the NEXUS invite? 👀</div>
-        <div class="pm s">Yeah just signed up, this is clean 🔥</div>
-        <div class="pm r">Right?? And you get your own number too</div>
-        <div class="pm s">Already added you. Let's go 🚀</div>
-      </div>
-    </div>
-  </section>
-  <section class="land-features">
-    <h2 class="features-title">Everything you need</h2>
-    <p class="features-sub">Built for real conversations, not distractions.</p>
-    <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-name">Real-time</div><div class="feature-desc">Messages delivered instantly via WebSocket. No refresh, no delay.</div></div>
-      <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-name">Your own number</div><div class="feature-desc">Every account gets a unique +67 number. Share it to connect.</div></div>
-      <div class="feature-card"><div class="feature-icon">🎨</div><div class="feature-name">Personalize</div><div class="feature-desc">Profile photo, display name, status, and accent colors — make it yours.</div></div>
-      <div class="feature-card"><div class="feature-icon">🔒</div><div class="feature-name">Private</div><div class="feature-desc">No ads, no tracking, no nonsense. Just you and your contacts.</div></div>
-    </div>
-  </section>
-  <section class="land-cta">
-    <h2 class="cta-title">Ready to connect?</h2>
-    <p class="cta-sub">Create your account in seconds. It is completely free.</p>
-    <button class="btn-hero-primary" onclick="showAuth('register')">Get Started - It is Free</button>
-  </section>
-  <footer class="land-footer">NEXUS - Made by Stickman - Powered by Claude AI</footer>
-</div>
-
-<!-- -- TUTORIAL ---------------------------------------------- -->
-<div id="tutorial" class="hidden">
-  <div class="tut-backdrop"></div>
-  <div class="tut-highlight" id="tut-highlight"></div>
-  <div class="tut-box" id="tut-box">
-    <div class="tut-step-label" id="tut-step-label">Step 1 of 5</div>
-    <div class="tut-title" id="tut-title">Welcome to NEXUS!</div>
-    <div class="tut-desc" id="tut-desc">Let us take a quick look around.</div>
-    <div class="tut-footer">
-      <div class="tut-dots" id="tut-dots"></div>
-      <div class="tut-btns">
-        <button class="tut-skip" onclick="skipTutorial()">Skip</button>
-        <button class="tut-next" onclick="tutNext()">Next</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- -- AUTH SCREEN ------------------------------------------ -->
-<div id="auth-screen" class="hidden" style="display:none">
+<!-- ══ AUTH SCREEN ══════════════════════════════════════════ -->
+<div id="auth-screen">
   <div class="auth-bg">
     <div class="auth-orb orb1"></div>
     <div class="auth-orb orb2"></div>
@@ -131,7 +62,7 @@
   </div>
 </div>
 
-<!-- -- MAIN APP ---------------------------------------------- -->
+<!-- ══ MAIN APP ══════════════════════════════════════════════ -->
 <div id="app" class="hidden">
 
   <!-- SIDEBAR -->
