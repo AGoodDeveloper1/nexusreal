@@ -10,7 +10,7 @@
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;overflow:hidden}
 
-/* ── AUTH ──────────────────────────────────────────────────── */
+/* - AUTH - */
 #auth-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;background:var(--bg)}
 .auth-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .auth-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.18}
@@ -40,12 +40,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .auth-msg.ok{color:var(--online)}
 .auth-msg.err{color:var(--danger)}
 
-/* ── APP LAYOUT ────────────────────────────────────────────── */
+/* - APP LAYOUT - */
 #app{display:flex;height:100vh;overflow:hidden;animation:app-in .4s ease both}
 @keyframes app-in{from{opacity:0}to{opacity:1}}
 #app.hidden{display:none}
 
-/* ── SIDEBAR ───────────────────────────────────────────────── */
+/* - SIDEBAR - */
 #sidebar{width:300px;min-width:300px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100%}
 .sidebar-top{padding:18px 14px 0}
 .app-brand{font-family:var(--font-logo);font-size:20px;font-weight:800;letter-spacing:2px;margin-bottom:14px;padding-left:4px}
@@ -80,7 +80,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .sidebar-btn:hover{background:var(--surface-2);color:var(--accent);border-color:rgba(124,92,252,.3)}
 .sidebar-btn.dev-only.hidden{display:none}
 
-/* ── CHAT AREA ─────────────────────────────────────────────── */
+/* - CHAT AREA - */
 #chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 .chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text-dim)}
 .empty-icon{font-size:52px;margin-bottom:8px}
@@ -113,12 +113,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .send-btn:active{transform:scale(.97)}
 .send-btn svg{width:18px;height:18px}
 
-/* ── AVATARS ───────────────────────────────────────────────── */
+/* - AVATARS - */
 .avatar{width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;background:var(--accent);background-size:cover;background-position:center;overflow:hidden}
 .avatar.sm{width:36px;height:36px;font-size:13px}
 .avatar.lg{width:72px;height:72px;font-size:26px}
 
-/* ── SIDE PANELS ───────────────────────────────────────────── */
+/* - SIDE PANELS - */
 .side-panel{position:fixed;right:0;top:0;bottom:0;width:360px;background:var(--surface);border-left:1px solid var(--border);z-index:200;overflow-y:auto;padding:22px;transform:translateX(100%);transition:transform .3s cubic-bezier(.22,1,.36,1)}
 .side-panel.open{transform:translateX(0)}
 .side-panel.hidden{display:none}
@@ -136,7 +136,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .panel-msg.ok{color:var(--online)}
 .panel-msg.err{color:var(--danger)}
 
-/* ── SETTINGS ──────────────────────────────────────────────── */
+/* - SETTINGS - */
 .settings-avatar-area{text-align:center;margin-bottom:24px}
 .settings-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;cursor:pointer;position:relative;background-size:cover;background-position:center;overflow:hidden;transition:opacity .2s}
 .settings-avatar:hover{opacity:.85}
@@ -186,12 +186,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .btn-danger{width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;color:var(--danger);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
 .btn-danger:hover{background:rgba(239,68,68,.18)}
 
-/* ── OVERLAY ───────────────────────────────────────────────── */
+/* - OVERLAY - */
 .overlay{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);animation:fade-in .2s ease}
 .overlay.hidden{display:none}
 @keyframes fade-in{from{opacity:0}to{opacity:1}}
 
-/* ── MODALS ────────────────────────────────────────────────── */
+/* - MODALS - */
 .modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
 .modal.hidden{display:none}
 .modal-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px 36px;width:360px;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.7);animation:card-in .3s cubic-bezier(.22,1,.36,1) both}
@@ -208,7 +208,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .btn-cancel{padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
 .btn-cancel:hover{background:var(--surface-3)}
 
-/* ── DEV PANEL ─────────────────────────────────────────────── */
+/* - DEV PANEL - */
 .dev-panel{position:fixed;inset:0;z-index:500;background:#07080f;display:flex;flex-direction:column}
 .dev-panel.hidden{display:none}
 @keyframes dev-slide{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
@@ -264,7 +264,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .stat-number{font-size:36px;font-weight:700;color:var(--accent);font-family:var(--font-logo)}
 .stat-label{font-size:12px;color:#4a5568;text-transform:uppercase;letter-spacing:1px;margin-top:6px;font-family:monospace}
 
-/* ══ LANDING PAGE ══════════════════════════════════════════ */
+/* - LANDING PAGE - */
 #landing{position:fixed;inset:0;z-index:400;background:var(--bg);overflow-y:auto;overflow-x:hidden}
 #landing.hidden{display:none}
 .land-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 60px;position:sticky;top:0;background:rgba(11,12,20,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.04);z-index:10}
@@ -319,7 +319,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .cta-sub{color:var(--text-dim);font-size:15px;margin-bottom:34px}
 .land-footer{text-align:center;padding:24px;color:var(--text-muted);font-size:12px;letter-spacing:.5px}
 
-/* ══ TUTORIAL OVERLAY ══════════════════════════════════════ */
+/* - TUTORIAL OVERLAY - */
 #tutorial{position:fixed;inset:0;z-index:600;pointer-events:none}
 #tutorial.hidden{display:none}
 .tut-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.7);pointer-events:all}
