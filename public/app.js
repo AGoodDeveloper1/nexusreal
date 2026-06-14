@@ -1,6 +1,6 @@
-// ═══════════════════════════════════════════════════════════
-//  NEXUS — app.js
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
+//  NEXUS - app.js
+// -----------------------------------------------------------
 let currentUser = null;
 let currentChat = null;
 let contacts    = [];
@@ -18,7 +18,7 @@ const THEMES = [
   { name:'Pink',   accent:'#ec4899', accent2:'#f472b6', glow:'rgba(236,72,153,0.3)',  sent:'linear-gradient(135deg,#db2777,#ec4899)' },
 ];
 
-// ── Bootstrap ───────────────────────────────────────────────
+// -- Bootstrap -----------------------------------------------
 window.addEventListener("DOMContentLoaded", () => {
   initTheme();
   initThemeSwatches();
@@ -29,9 +29,9 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  AUTH
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function authTab(tab) {
   document.getElementById("form-login").classList.toggle("hidden", tab !== "login");
   document.getElementById("form-register").classList.toggle("hidden", tab !== "register");
@@ -86,9 +86,9 @@ function logout() {
   closeAll();
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  APP LAUNCH
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 async function launchApp() {
   document.getElementById("auth-screen").style.display = "none";
   document.getElementById("app").classList.remove("hidden");
@@ -111,9 +111,9 @@ function refreshMeHeader() {
   setText("me-phone", currentUser.phone_number);
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  CONTACTS
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 async function loadContacts() {
   try {
     contacts = await get(`/api/contacts/${currentUser.id}`);
@@ -168,9 +168,9 @@ function filterContacts(q) {
   renderContacts(filtered);
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  CHAT
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 async function openChat(contactId) {
   currentChat = contacts.find(c => c.id === contactId);
   if (!currentChat) return;
@@ -260,9 +260,9 @@ function msgKeydown(e) {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  SOCKET
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function connectSocket() {
   socket = io({ reconnection: true, reconnectionAttempts: 10, reconnectionDelay: 1500 });
 
@@ -301,9 +301,9 @@ function updateContactPreview(msg) {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  ADD CONTACT
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function openAddPanel() {
   document.getElementById("add-panel").classList.remove("hidden");
   requestAnimationFrame(() => document.getElementById("add-panel").classList.add("open"));
@@ -341,9 +341,9 @@ async function doAddContact() {
   } catch { showMsg(msgEl,"err","Server error."); }
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  SETTINGS
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 async function openSettings() {
   const u = currentUser;
   document.getElementById("settings-name").value = u.display_name;
@@ -440,7 +440,7 @@ function copyPhone() {
   });
 }
 
-// ── Theme ───────────────────────────────────────────────────
+// -- Theme ---------------------------------------------------
 function initThemeSwatches() {
   const container = document.getElementById("theme-swatches");
   if (!container) return;
@@ -474,9 +474,9 @@ function applyTheme(t) {
   r.setProperty("--sent-bg", t.sent);
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  DELETE ACCOUNT
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function openDeleteConfirm() {
   document.getElementById("delete-confirm-input").value = "";
   document.getElementById("delete-msg").textContent = "";
@@ -505,9 +505,9 @@ async function confirmDeleteAccount() {
   } catch { showMsg(msgEl,"err","Server error."); }
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  CREDITS
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function openCredits() {
   document.getElementById("credits-modal").classList.remove("hidden");
 }
@@ -515,9 +515,9 @@ function closeCredits() {
   document.getElementById("credits-modal").classList.add("hidden");
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  DEV MODE (admin only)
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function openDevPanel() {
   document.getElementById("dev-panel").classList.remove("hidden");
   loadDevUsers();
@@ -631,9 +631,9 @@ async function loadDevStats() {
   } catch { grid.innerHTML = `<div style="color:var(--danger);grid-column:1/-1">Failed to load.</div>`; }
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  CLOSE ALL
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function closeAll() {
   ["add-panel","settings-panel"].forEach(id => {
     document.getElementById(id).classList.remove("open");
@@ -642,9 +642,9 @@ function closeAll() {
   document.getElementById("overlay").classList.add("hidden");
 }
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  HELPERS
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function val(id) { return document.getElementById(id)?.value.trim() || ""; }
 function setText(id, text) { const el=document.getElementById(id); if(el) el.textContent=text; }
 function showMsg(el, cls, msg) {
@@ -708,9 +708,9 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  LANDING PAGE
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 function showAuth(tab) {
   document.getElementById("landing").classList.add("hidden");
   const authEl = document.getElementById("auth-screen");
@@ -723,13 +723,13 @@ function showAuth(tab) {
 const _origBootstrap = window.addEventListener;
 window.addEventListener("DOMContentLoaded", () => {
   if (!localStorage.getItem("nexus_user")) {
-    // landing is visible by default, auth is hidden — nothing to do
+    // landing is visible by default, auth is hidden - nothing to do
   }
 });
 
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 //  TUTORIAL
-// ═══════════════════════════════════════════════════════════
+// -----------------------------------------------------------
 const TUT_STEPS = [
   {
     title: "Welcome to NEXUS! 👋",
