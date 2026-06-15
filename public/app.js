@@ -862,3 +862,227 @@ async function toggleRole(userId, currentRole) {
     if (btn) { btn.textContent = 'Error'; btn.disabled = false; }
   }
 }
+
+// ============================================================
+//  VOICE CALLS (WebRTC)
+// ============================================================
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'turn:openrelay.metered.ca:80',      username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443',     username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+  ]
+};
+
+let pc = null;           // RTCPeerConnection
+let localStream = null;
+let callState = 'idle';  // idle | calling | incoming | active
+let callContact = null;  // the other person
+let incomingOffer = null;
+let callTimerInterval = null;
+let callSeconds = 0;
+let muted = false;
+
+// -- Start a call from chat header --
+async function startCall() {
+  if (!currentChat) return;
+  if (callState !== 'idle') return;
+  callContact = currentChat;
+  callState = 'calling';
+
+  setCallAvatar('cout-avatar', callContact.avatar, callContact.display_name);
+  setText('cout-name', callContact.display_name);
+  show('call-outgoing');
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    pc = createPC();
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('call-offer', {
+      from: currentUser.id,
+      to: callContact.id,
+      from_name: currentUser.display_name,
+      from_avatar: currentUser.avatar || null,
+      offer
+    });
+  } catch (err) {
+    alert('Microphone access denied or not available.\n\nOn local network (non-localhost) Chrome requires HTTPS for mic access.\nTry opening via http://localhost:6767 instead.');
+    resetCall();
+  }
+}
+
+async function acceptCall() {
+  if (callState !== 'incoming' || !incomingOffer) return;
+  callState = 'active';
+  hide('call-incoming');
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    pc = createPC();
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    await pc.setRemoteDescription(new RTCSessionDescription(incomingOffer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit('call-answer', { from: currentUser.id, to: callContact.id, answer });
+    showActiveCall();
+  } catch (err) {
+    alert('Microphone access denied.');
+    rejectCall();
+  }
+}
+
+function rejectCall() {
+  socket.emit('call-reject', { from: currentUser.id, to: callContact?.id });
+  resetCall();
+}
+
+function endCall() {
+  socket.emit('call-end', { from: currentUser.id, to: callContact?.id });
+  resetCall();
+}
+
+function toggleMute() {
+  if (!localStream) return;
+  muted = !muted;
+  localStream.getAudioTracks().forEach(t => t.enabled = !muted);
+  const btn = document.getElementById('mute-btn');
+  const lbl = document.getElementById('mute-label');
+  if (btn) btn.classList.toggle('active', muted);
+  if (lbl) lbl.textContent = muted ? 'Unmute' : 'Mute';
+}
+
+// -- Socket call events (received) --
+function setupCallSocketEvents() {
+  socket.on('call-offer', ({ from, from_name, from_avatar, offer }) => {
+    if (callState !== 'idle') {
+      socket.emit('call-reject', { from: currentUser.id, to: from });
+      return;
+    }
+    callState = 'incoming';
+    callContact = contacts.find(c => c.id === from) || { id: from, display_name: from_name, avatar: from_avatar };
+    incomingOffer = offer;
+    setCallAvatar('cin-avatar', from_avatar, from_name);
+    setText('cin-name', from_name);
+    show('call-incoming');
+  });
+
+  socket.on('call-answer', async ({ answer }) => {
+    if (pc) {
+      await pc.setRemoteDescription(new RTCSessionDescription(answer));
+      callState = 'active';
+      hide('call-outgoing');
+      showActiveCall();
+    }
+  });
+
+  socket.on('call-reject', () => {
+    resetCall();
+    showCallToast('Call declined.');
+  });
+
+  socket.on('call-end', () => {
+    resetCall();
+    showCallToast('Call ended.');
+  });
+
+  socket.on('call-missed', () => {
+    resetCall();
+    showCallToast('User is offline.');
+  });
+
+  socket.on('call-ice', async ({ candidate }) => {
+    if (pc && candidate) {
+      try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch {}
+    }
+  });
+}
+
+// -- RTCPeerConnection factory --
+function createPC() {
+  const conn = new RTCPeerConnection(RTC_CONFIG);
+
+  conn.onicecandidate = ({ candidate }) => {
+    if (candidate && callContact) {
+      socket.emit('call-ice', { from: currentUser.id, to: callContact.id, candidate });
+    }
+  };
+
+  conn.ontrack = ({ streams }) => {
+    const audio = document.getElementById('remote-audio');
+    if (audio && streams[0]) audio.srcObject = streams[0];
+  };
+
+  conn.onconnectionstatechange = () => {
+    if (['disconnected', 'failed', 'closed'].includes(conn.connectionState)) {
+      resetCall();
+    }
+  };
+
+  return conn;
+}
+
+// -- UI helpers --
+function showActiveCall() {
+  setCallAvatar('cact-avatar', callContact.avatar, callContact.display_name);
+  setText('cact-name', callContact.display_name);
+  callSeconds = 0; muted = false;
+  const timerEl = document.getElementById('call-timer');
+  callTimerInterval = setInterval(() => {
+    callSeconds++;
+    const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+    const s = String(callSeconds % 60).padStart(2, '0');
+    if (timerEl) timerEl.textContent = `${m}:${s}`;
+  }, 1000);
+  show('call-active');
+}
+
+function resetCall() {
+  if (callTimerInterval) { clearInterval(callTimerInterval); callTimerInterval = null; }
+  if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+  if (pc) { pc.close(); pc = null; }
+  const audio = document.getElementById('remote-audio');
+  if (audio) audio.srcObject = null;
+  hide('call-outgoing'); hide('call-incoming'); hide('call-active');
+  callState = 'idle'; callContact = null; incomingOffer = null; muted = false;
+  const btn = document.getElementById('mute-btn');
+  if (btn) btn.classList.remove('active');
+}
+
+function setCallAvatar(elId, src, name) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (src) {
+    el.style.backgroundImage = `url('${src}')`;
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.style.fontSize = '0';
+  } else {
+    el.style.backgroundImage = '';
+    el.style.backgroundColor = avatarColor(name || '?');
+    el.textContent = initials(name);
+    el.style.fontSize = '';
+  }
+}
+
+function show(id) { document.getElementById(id)?.classList.remove('hidden'); }
+function hide(id) { document.getElementById(id)?.classList.add('hidden'); }
+
+function showCallToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1b1c2d;border:1px solid #1e2035;color:#dde1f5;padding:10px 22px;border-radius:10px;font-size:14px;z-index:800;animation:card-in .3s ease';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// Hook into existing connectSocket
+const _origConnectSocket = connectSocket;
+connectSocket = function() {
+  _origConnectSocket();
+  // Wait for socket to be set then attach call events
+  setTimeout(setupCallSocketEvents, 100);
+};
