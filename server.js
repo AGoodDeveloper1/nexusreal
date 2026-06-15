@@ -282,9 +282,19 @@ io.on("connection", (socket) => {
 });
 
 // Start
+if (!process.env.DATABASE_URL) {
+  console.error("========================================");
+  console.error("ERROR: DATABASE_URL is not set!");
+  console.error("Render dashboard -> your web service ->");
+  console.error("Environment -> add DATABASE_URL from");
+  console.error("your PostgreSQL database instance.");
+  console.error("========================================");
+  process.exit(1);
+}
+
 initDB().then(() => {
-  server.listen(PORT, () => console.log(`\n  NEXUS -> http://localhost:${PORT}\n`));
+  server.listen(PORT, () => console.log("\n  NEXUS running\n"));
 }).catch(err => {
-  console.error("DB init failed:", err.message);
+  console.error("DB init failed:", err);
   process.exit(1);
 });
