@@ -1088,7 +1088,7 @@ connectSocket = function() {
 };
 const token = "141f23ba-c6ec-44f6-815b-5b76077acd3e";
 const response = await fetch(
-  `https://work.ink/_api/v2/token/isValid/${token}`
+  `https://work.ink/_api/v2/token/isValid/${141f23ba-c6ec-44f6-815b-5b76077acd3e}`
 );
 const data = await response.json();
 
