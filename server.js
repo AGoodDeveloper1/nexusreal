@@ -11,8 +11,8 @@ const io     = new Server(server, { cors: { origin: "*", methods: ["GET","POST",
 
 // PostgreSQL pool - Render sets DATABASE_URL automatically
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+  connectionString: process.env.postgresql://nexus_postgressql_user:RojGuAd7AwbJBAwenoxKo7qIHfS8hVSS@dpg-d8nqq57lk1mc73a0ud0g-a.ohio-postgres.render.com/nexus_postgressql,
+  ssl: process.env.postgresql://nexus_postgressql_user:RojGuAd7AwbJBAwenoxKo7qIHfS8hVSS@dpg-d8nqq57lk1mc73a0ud0g-a.ohio-postgres.render.com/nexus_postgressql ? { rejectUnauthorized: false } : false
 });
 
 async function query(sql, params = []) {
