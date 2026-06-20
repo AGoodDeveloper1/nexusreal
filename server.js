@@ -298,14 +298,3 @@ initDB().then(() => {
   console.error("DB init failed:", err);
   process.exit(1);
 });
-const token = "141f23ba-c6ec-44f6-815b-5b76077acd3e";
-const response = await fetch(
-  `https://work.ink/_api/v2/token/isValid/${token}`
-);
-const data = await response.json();
-
-if (data.valid) {
-  // Grant access
-} else {
-  // Deny access
-}
